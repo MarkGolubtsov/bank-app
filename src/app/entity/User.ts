@@ -1,6 +1,7 @@
 import {Passport} from 'app/entity/Passport';
 import {Work} from 'app/entity/Work';
 import {Entity} from 'app/entity/Entity';
+import {SelectValue} from 'app/entity/SelectValue';
 
 export interface User extends Entity{
 
@@ -16,7 +17,7 @@ export interface User extends Entity{
 
     placeOfBirth: string,
 
-    cityOfActualResidence: string,
+    cityOfActualResidence: SelectValue,
 
     addressOfActualResidence: string,
 
@@ -28,14 +29,15 @@ export interface User extends Entity{
 
     work: Work,
 
-    maritalStatus: string,
+    maritalStatus: SelectValue,
 
-    nationality: string,
+    nationality: SelectValue,
 
-    disability: string,
+    disability: SelectValue,
 
     pensioner: boolean,
 
-    monthlyIncome: string
+    monthlyIncome: string,
 
+    military: boolean
 }
