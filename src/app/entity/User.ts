@@ -1,8 +1,8 @@
 import {Passport} from 'app/entity/Passport';
 import {Work} from 'app/entity/Work';
+import {Entity} from 'app/entity/Entity';
 
-export interface User {
-    id: string,
+export interface User extends Entity{
 
     surname: string,
 

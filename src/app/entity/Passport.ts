@@ -1,4 +1,6 @@
-export interface Passport {
+import {Entity} from 'app/entity/Entity';
+
+export interface Passport extends Entity{
     series: string,
 
     number: string,
