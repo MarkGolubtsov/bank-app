@@ -12,7 +12,7 @@ export const DateFormItem = ({name, shortName}: DefaultStringFormItemProps) => {
     const label = nameString[0].toUpperCase() + nameString.slice(1, nameString.length);
     return (
         <Form.Item rules={[getRequireRule(nameString)]} name={name} label={label}>
-            <DatePicker/>
+            <DatePicker />
         </Form.Item>
     )
 }

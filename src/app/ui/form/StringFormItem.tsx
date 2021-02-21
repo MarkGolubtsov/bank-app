@@ -13,7 +13,7 @@ export const StringFormItem = ({name, shortName, isNotRequire}: DefaultStringFor
     const label = nameString[0].toUpperCase() + nameString.slice(1, nameString.length);
     const rules = !isNotRequire ? [getWhiteSpaceRule(nameString), getRequireRule(nameString)] : [getWhiteSpaceRule(nameString)];
     return (
-        <Form.Item rules={rules} name={name}
+        <Form.Item initialValue={''} rules={rules} name={name}
                    label={label}>
             <Input placeholder={'Write ' + nameString}/>
         </Form.Item>

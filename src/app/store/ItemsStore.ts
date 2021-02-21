@@ -12,7 +12,7 @@ export class ItemsStore<T> {
         this.endpoint = endpoint;
     }
 
-    public fetchItems() {
+    public fetchItems = () => {
         RequestService.get(this.endpoint).then((response) => {
             runInAction(() => {
                 this._items = response.data.payload;
@@ -20,8 +20,11 @@ export class ItemsStore<T> {
         });
     }
 
+    public createItem = (item: T) : Promise<any> => {
+        return RequestService.post(this.endpoint,{}, item).then(this.fetchItems);
+    }
+
     get items(): T[] {
         return toJS(this._items);
     }
-
 }
