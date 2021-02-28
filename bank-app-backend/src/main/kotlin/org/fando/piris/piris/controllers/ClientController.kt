@@ -13,6 +13,7 @@ import javax.xml.ws.Response
 
 @RestController
 @RequestMapping("client")
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class ClientController @Autowired constructor(
         val clientService: ClientService,
         val idDocumentService: IdDocumentService,
