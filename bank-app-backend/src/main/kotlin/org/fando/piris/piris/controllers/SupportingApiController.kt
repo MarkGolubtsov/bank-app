@@ -1,9 +1,6 @@
 package org.fando.piris.piris.controllers
 
-import org.fando.piris.piris.models.BelarusCities
-import org.fando.piris.piris.models.CountriesEnum
-import org.fando.piris.piris.models.RussiaCities
-import org.fando.piris.piris.models.UkraineCities
+import org.fando.piris.piris.models.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -14,6 +11,9 @@ class SupportingApiController {
 
     @GetMapping("countries")
     fun getCountries() = ResponseEntity.ok(CountriesEnum.values())
+
+    @GetMapping("disabilities")
+    fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values())
 
     @GetMapping("cities")
     fun getCities(@RequestParam("country") country: CountriesEnum) = when (country) {
