@@ -1,6 +1,6 @@
 package org.fando.piris.piris.models
 
-enum class DisabilityEnum(disability: String) {
+enum class DisabilityEnum(val disability: String) {
     INTELLECTUAL("Intellectual"),
     PHYSICAL("Physical"),
     NEUROLOGICAL("Neurological "),

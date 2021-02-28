@@ -13,13 +13,19 @@ class SupportingApiController {
     fun getCountries() = ResponseEntity.ok(CountriesEnum.values())
 
     @GetMapping("disabilities")
-    fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values())
+    fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values().map { it.disability })
+
+    @GetMapping("martialStatus")
+    fun getMartialStatuses() = ResponseEntity.ok(FamilyStatusEnum.values().map { it.status })
+
+    @GetMapping("gender")
+    fun getGenders() = ResponseEntity.ok(GenderEnum.values().map { it.gender })
 
     @GetMapping("cities")
     fun getCities(@RequestParam("country") country: CountriesEnum) = when (country) {
-        CountriesEnum.BLR -> ResponseEntity.ok(BelarusCities.values())
-        CountriesEnum.RUS -> ResponseEntity.ok(RussiaCities.values())
-        CountriesEnum.UKR -> ResponseEntity.ok(UkraineCities.values())
+        CountriesEnum.BLR -> ResponseEntity.ok(BelarusCities.values().map { it.city })
+        CountriesEnum.RUS -> ResponseEntity.ok(RussiaCities.values().map { it.city })
+        CountriesEnum.UKR -> ResponseEntity.ok(UkraineCities.values().map { it.city })
         else -> ResponseEntity.badRequest().body("Invalid country passed")
     }
 }

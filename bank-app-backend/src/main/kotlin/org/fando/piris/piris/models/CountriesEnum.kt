@@ -1,6 +1,6 @@
 package org.fando.piris.piris.models
 
-enum class CountriesEnum(country: String) {
+enum class CountriesEnum(val country: String) {
     BLR("Belarus"),
     RUS("Russia"),
     UKR("Ukraine")
