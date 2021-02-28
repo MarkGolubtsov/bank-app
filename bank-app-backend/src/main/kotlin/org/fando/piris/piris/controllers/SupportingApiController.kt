@@ -15,7 +15,7 @@ class SupportingApiController {
     @GetMapping("disabilities")
     fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values().map { it.disability })
 
-    @GetMapping("martialStatus")
+    @GetMapping("martial-statuses")
     fun getMartialStatuses() = ResponseEntity.ok(FamilyStatusEnum.values().map { it.status })
 
     @GetMapping("gender")
