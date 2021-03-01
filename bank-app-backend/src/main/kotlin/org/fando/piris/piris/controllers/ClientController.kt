@@ -9,7 +9,7 @@ import org.fando.piris.piris.services.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import javax.xml.ws.Response
+
 
 @RestController
 @RequestMapping("client")

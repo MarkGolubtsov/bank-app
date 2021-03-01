@@ -13,13 +13,13 @@ class SupportingApiController {
     fun getCountries() = ResponseEntity.ok(CountriesEnum.values())
 
     @GetMapping("disabilities")
-    fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values().map { it.disability })
+    fun getDisabilities() = ResponseEntity.ok(DisabilityEnum.values().map { it })
 
     @GetMapping("martial-statuses")
-    fun getMartialStatuses() = ResponseEntity.ok(FamilyStatusEnum.values().map { it.status })
+    fun getMartialStatuses() = ResponseEntity.ok(FamilyStatusEnum.values().map { it })
 
     @GetMapping("gender")
-    fun getGenders() = ResponseEntity.ok(GenderEnum.values().map { it.gender })
+    fun getGenders() = ResponseEntity.ok(GenderEnum.values().map { it })
 
     @GetMapping("cities")
     fun getCities(@RequestParam("country") country: CountriesEnum) = when (country) {
