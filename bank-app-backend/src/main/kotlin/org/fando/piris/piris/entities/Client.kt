@@ -10,32 +10,32 @@ import javax.persistence.*
 
 @Entity
 open class Client(
-        open val name: String,
-        open val surname: String,
-        open val patronymic: String,
-        open val birthDate: LocalDate,
+        open var name: String,
+        open var surname: String,
+        open var patronymic: String,
+        open var birthDate: LocalDate,
         @Enumerated(EnumType.STRING)
-        open val gender: GenderEnum,
+        open var gender: GenderEnum,
         @OneToOne
         @JoinColumn(name = "document_id")
-        open val idDocument: IdDocument,
+        open var idDocument: IdDocument,
         @Enumerated(EnumType.STRING)
-        open val birthCountry: CountriesEnum,
+        open var birthCountry: CountriesEnum,
         @OneToOne
         @JoinColumn(name = "residential_address")
-        open val residentialAddress: Address,
-        open val homeTelephoneNum: String?,
-        open val mobileTelephoneNum: String?,
-        open val email: String?,
-        open val company: String?,
-        open val position: String?,
+        open var residentialAddress: Address,
+        open var homeTelephoneNum: String?,
+        open var mobileTelephoneNum: String?,
+        open var email: String?,
+        open var company: String?,
+        open var position: String?,
         @Enumerated(EnumType.STRING)
-        open val familyStatus: FamilyStatusEnum,
+        open var familyStatus: FamilyStatusEnum,
         @Enumerated(EnumType.STRING)
-        open val nationality: CountriesEnum,
+        open var nationality: CountriesEnum,
         @Enumerated(EnumType.STRING)
-        open val disability: DisabilityEnum,
-        open val isPensioner: Boolean,
-        open val monthlyIncome: BigDecimal?,
-        open val isMilitaryPerson: Boolean
+        open var disability: DisabilityEnum,
+        open var isPensioner: Boolean,
+        open var monthlyIncome: BigDecimal?,
+        open var isMilitaryPerson: Boolean
 ) : AbstractJpaPersistable()

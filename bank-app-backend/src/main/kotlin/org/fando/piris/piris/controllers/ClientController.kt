@@ -7,6 +7,8 @@ import org.fando.piris.piris.services.ClientService
 import org.fando.piris.piris.services.IdDocumentService
 import org.fando.piris.piris.services.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -30,11 +32,35 @@ class ClientController @Autowired constructor(
     }
 
     @GetMapping("{id}")
-    fun getClient(@PathVariable("id") clientId: Long): ResponseEntity<ResponseClient> {
-        val client = clientService.getClientById(clientId);
-        return ResponseEntity.ok(
-                responseService.generateResponseClientEntity(client, client.idDocument, client.residentialAddress)
-        )
+    fun getClient(@PathVariable("id") clientId: Long): ResponseEntity<Any> {
+        val client = clientService.getClientById(clientId)
+        return if (!client.isPresent) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
+        } else {
+            ResponseEntity.ok(
+                    responseService.generateResponseClientEntity(client.get(), client.get().idDocument, client.get().residentialAddress)
+            )
+        }
+    }
+
+    @PutMapping("{id}")
+    fun updateClient(@PathVariable("id") clientId: Long, @RequestBody requestClient: RequestClient): ResponseEntity<Any> {
+        val client = clientService.updateClient(clientId, requestClient);
+        return if (client == null) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
+        } else {
+            ResponseEntity.ok(responseService.generateResponseClientEntity(client, client.idDocument, client.residentialAddress))
+        }
+    }
+
+    @DeleteMapping("{id}")
+    fun deleteClient(@PathVariable("id") clientId: Long): ResponseEntity<Any> {
+        try {
+            clientService.deleteClient(clientId)
+        } catch (e: EmptyResultDataAccessException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
+        }
+        return ResponseEntity.ok().build()
     }
 
 

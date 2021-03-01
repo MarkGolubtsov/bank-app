@@ -7,7 +7,9 @@ import org.fando.piris.piris.models.RequestClient
 import org.fando.piris.piris.models.ResponseClient
 import org.fando.piris.piris.repositories.ClientRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -41,6 +43,40 @@ class ClientService @Autowired constructor(
         return clientRepository.save(client)
     }
 
-    fun getClientById(id: Long) = clientRepository.getOne(id);
+    fun getClientById(id: Long) = clientRepository.findById(id)
+
+    fun updateClient(clientId: Long, requestClient: RequestClient): Client? {
+        val client = getClientById(clientId);
+        if (!client.isPresent) {
+            return null
+        } else {
+            val foundClient = client.get()
+            foundClient.birthCountry = requestClient.birthCountry
+            foundClient.name = requestClient.name
+            foundClient.surname = requestClient.surname
+            foundClient.patronymic = requestClient.patronymic
+            foundClient.birthDate = requestClient.birthDate
+            foundClient.gender = requestClient.gender
+            foundClient.birthCountry = requestClient.birthCountry
+            foundClient.homeTelephoneNum = requestClient.homeTelephoneNum
+            foundClient.mobileTelephoneNum = requestClient.mobileTelephoneNum
+            foundClient.email = requestClient.email
+            foundClient.company = requestClient.jobInfo?.company
+            foundClient.position = requestClient.jobInfo?.position
+            foundClient.familyStatus = requestClient.familyStatus
+            foundClient.nationality = requestClient.nationality
+            foundClient.disability = requestClient.disability
+            foundClient.isPensioner = requestClient.isPensioner
+            foundClient.monthlyIncome = requestClient.monthlyIncome
+            foundClient.isMilitaryPerson = requestClient.isMilitaryPerson
+            return clientRepository.save(foundClient)
+        }
+    }
+
+    @Throws(EmptyResultDataAccessException::class)
+    fun deleteClient(clientId: Long) {
+        clientRepository.deleteById(clientId)
+    }
+
 
 }
