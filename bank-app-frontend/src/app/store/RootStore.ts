@@ -1,14 +1,15 @@
 import {ItemsStore} from 'app/store/ItemsStore';
 import {User} from 'app/entity/User';
 import {endpoints} from 'app/api/endpoints';
-import {SelectValue} from 'app/entity/SelectValue';
 
 export class RootStore {
     private readonly _usersStore = new ItemsStore<User>(endpoints.users);
-    private readonly _citiesStore = new ItemsStore<SelectValue>(endpoints.cities);
-    private readonly _nationalities = new ItemsStore<SelectValue>(endpoints.nationalities);
-    private readonly _martialStatuses = new ItemsStore<SelectValue>(endpoints.martialStatuses);
-    private readonly _disabilities = new ItemsStore<SelectValue>(endpoints.disabilities);
+    private readonly _citiesStore = new ItemsStore<string>(endpoints.cities);
+    private readonly _nationalities = new ItemsStore<string>(endpoints.nationalities);
+    private readonly _martialStatuses = new ItemsStore<string>(endpoints.martialStatuses);
+    private readonly _disabilities = new ItemsStore<string>(endpoints.disabilities);
+    private readonly _gender = new ItemsStore<string>(endpoints.gender);
+    private readonly _countries = new ItemsStore<string>(endpoints.countries)
 
     get usersStore() {
         return this._usersStore;
@@ -28,5 +29,13 @@ export class RootStore {
 
     get disabilitiesStore() {
         return this._disabilities;
+    }
+
+    get genderStore() {
+        return this._gender;
+    }
+
+    get countries() {
+        return this._countries;
     }
 }

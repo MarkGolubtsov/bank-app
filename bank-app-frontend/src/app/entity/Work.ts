@@ -1,6 +1,4 @@
-import {Entity} from 'app/entity/Entity';
-
-export interface Work extends Entity {
+export interface Work {
     place: string,
     position: string
 }

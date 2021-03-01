@@ -5,7 +5,7 @@ export interface Passport extends Entity{
 
     number: string,
 
-    issuedBy:string,
+    issuedBy: string,
 
     dateOfIssue: Date,
 

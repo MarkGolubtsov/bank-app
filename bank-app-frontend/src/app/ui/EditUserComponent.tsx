@@ -10,14 +10,12 @@ interface MatchId {
 }
 
 export const EditUserComponent = (props: RouteComponentProps<MatchId>) => {
-
     const id = props.match.params.id;
     const {usersStore} = useContext(RootStoreContext);
 
     const onSave = (user: User) => {
-        console.log(user);
-        usersStore.createItem(user).then(()=>{
-
+        usersStore.updateItem(user.id, user).then(() => {
+            props.history.goBack();
         });
     }
 
@@ -25,7 +23,8 @@ export const EditUserComponent = (props: RouteComponentProps<MatchId>) => {
         props.history.goBack();
     }
 
+    const user = usersStore.items.find(user => Number(user.id) === Number(id));
     return (
-        <UserForm onSave={onSave} onCancel={onCancel}/>
+        <UserForm user={user} onSave={onSave} onCancel={onCancel}/>
     )
 }

@@ -47,7 +47,6 @@ export const getObjectFromValues = (object: any) => {
                 })
                 resultObject[key] = buf;
             } else {
-                console.log(key)
                 resultObject[key] = object[key].toDate();
             }
 

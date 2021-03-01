@@ -1,9 +1,10 @@
 export class Routes {
 
     public static users = '/users';
+    public static createUser = '/users/create';
 
-    public static user(id: string) {
-        return '/users/' + id
+    public static editUser(id: string) {
+        return '/users/edit/' + id
     }
 
 }

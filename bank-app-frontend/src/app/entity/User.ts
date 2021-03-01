@@ -1,7 +1,9 @@
 import {Passport} from 'app/entity/Passport';
 import {Work} from 'app/entity/Work';
 import {Entity} from 'app/entity/Entity';
-import {SelectValue} from 'app/entity/SelectValue';
+import {Address} from 'app/entity/Address';
+
+
 
 export interface User extends Entity{
 
@@ -13,31 +15,31 @@ export interface User extends Entity{
 
     birthday: Date,
 
+    gender: string,
+
     passport: Passport,
 
     placeOfBirth: string,
 
-    cityOfActualResidence: SelectValue,
-
-    addressOfActualResidence: string,
-
-    mobilePhoneNumber: string,
+    residentialAddress: Address
 
     homePhoneNumber: string,
+
+    mobilePhoneNumber: string,
 
     email: string,
 
     work: Work,
 
-    maritalStatus: SelectValue,
+    maritalStatus: string,
 
-    nationality: SelectValue,
+    nationality: string,
 
-    disability: SelectValue,
+    disability: string,
 
     pensioner: boolean,
 
-    monthlyIncome: string,
+    monthlyIncome: number,
 
     military: boolean
 }
