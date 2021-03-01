@@ -50,7 +50,9 @@ class ResponseService {
                 client.monthlyIncome,
                 client.isMilitaryPerson
         )
-
-
     }
+
+    fun generateResponseClientEntity(clients: List<Client>): List<ResponseClient> =
+            clients.map { client -> generateResponseClientEntity(client, client.idDocument, client.residentialAddress)  }
+
 }
