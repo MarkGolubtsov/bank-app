@@ -2,11 +2,9 @@ package org.fando.piris.piris.services
 
 import org.fando.piris.piris.entities.Address
 import org.fando.piris.piris.entities.Client
+import org.fando.piris.piris.entities.Deposits
 import org.fando.piris.piris.entities.IdDocument
-import org.fando.piris.piris.models.Addresses
-import org.fando.piris.piris.models.IdDocumentInfo
-import org.fando.piris.piris.models.JobInfo
-import org.fando.piris.piris.models.ResponseClient
+import org.fando.piris.piris.models.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -53,6 +51,16 @@ class ResponseService {
     }
 
     fun generateResponseClientEntity(clients: List<Client>): List<ResponseClient> =
-            clients.map { client -> generateResponseClientEntity(client, client.idDocument, client.residentialAddress)  }
+            clients.map { client -> generateResponseClientEntity(client, client.idDocument, client.residentialAddress) }
+
+    fun generateResponseDepositEntity(deposits: List<Deposits>) =
+            deposits.map { dep -> generateResponseDepositEntity(dep) }
+
+    fun generateResponseDepositEntity(deposit: Deposits) =
+            ResponseDeposit(
+                    deposit.id,
+                    deposit.depositName,
+            )
+
 
 }

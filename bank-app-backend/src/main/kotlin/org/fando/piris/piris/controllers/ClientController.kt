@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("client")
+@RequestMapping("clients")
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class ClientController @Autowired constructor(
         val clientService: ClientService,
@@ -63,7 +63,7 @@ class ClientController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping("")
+    @GetMapping("all")
     fun getAllClients(): ResponseEntity<List<ResponseClient>> {
         val clients = clientService.getAllClients()
         return ResponseEntity.ok(responseService.generateResponseClientEntity(clients))

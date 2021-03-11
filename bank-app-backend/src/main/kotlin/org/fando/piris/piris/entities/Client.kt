@@ -37,5 +37,9 @@ open class Client(
         open var disability: DisabilityEnum,
         open var isPensioner: Boolean,
         open var monthlyIncome: BigDecimal?,
-        open var isMilitaryPerson: Boolean
+        open var isMilitaryPerson: Boolean,
+        @OneToMany(mappedBy = "client")
+        open var debitAccounts: MutableList<Account> = mutableListOf(),
+        @OneToMany(mappedBy = "client")
+        open var contracts: MutableList<Contract> = mutableListOf()
 ) : AbstractJpaPersistable()

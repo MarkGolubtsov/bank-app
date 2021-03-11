@@ -45,7 +45,7 @@ class ClientService @Autowired constructor(
 
     fun getClientById(id: Long) = clientRepository.findById(id)
 
-    fun getAllClients() = clientRepository.findAll()
+    fun getAllClients(): MutableList<Client> = clientRepository.findAll()
 
     fun updateClient(clientId: Long, requestClient: RequestClient): Client? {
         val client = getClientById(clientId);

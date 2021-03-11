@@ -21,6 +21,9 @@ class SupportingApiController {
     @GetMapping("gender")
     fun getGenders() = ResponseEntity.ok(GenderEnum.values().map { it })
 
+    @GetMapping("currency")
+    fun getCurrencies() = ResponseEntity.ok(CurrencyEnum.values().map { it })
+
     @GetMapping("cities")
     fun getCities(@RequestParam("country") country: CountriesEnum) = when (country) {
         CountriesEnum.BLR -> ResponseEntity.ok(BelarusCities.values().map { it.city })
