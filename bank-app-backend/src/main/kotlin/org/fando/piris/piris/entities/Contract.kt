@@ -9,6 +9,7 @@ import javax.persistence.*
 @Entity
 open class Contract(
         open val number: String,
+        @Enumerated(EnumType.STRING)
         open val currency: CurrencyEnum,
         open val contractStartDate: LocalDate,
         open val contractEndDate: LocalDate,

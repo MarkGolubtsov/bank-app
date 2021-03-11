@@ -4,8 +4,6 @@ import moment from 'moment';
 import {RootStoreContext} from 'app/RootStoreContext';
 import {observer} from 'mobx-react-lite';
 
-const {RangePicker} = DatePicker;
-
 type DepType = {
     id: number,
     name: string,
@@ -18,31 +16,58 @@ type CountType = {
     value: number,
     procent: number
 }
-const depositsPlans: DepType[] = [
+
+const creditesPlans: DepType[] = [
     {
         id: 1,
         name: 'First',
-        countDays: [{
-            value: 100,
-            procent: 17.0
-        }],
-        type: 'd'
+        countDays: [
+            {
+                value: 6,
+                procent: 29.9
+            },
+            {
+                value: 12,
+                procent: 29.9
+            },
+            {
+                value: 18,
+                procent: 29.9
+            },
+            {
+                value: 24,
+                procent: 29.9
+            },
+            {
+                value: 36,
+                procent: 29.9
+            },
+            {
+                value: 48,
+                procent: 29.9
+            },
+            {
+                value: 60,
+                procent: 29.9
+            }
+            ],
+        type: 'months'
     },
     {
         id: 2,
         name: 'Last',
         countDays: [{
-            value: 6,
-            procent: 12.5
+            value: 48,
+            procent: 28.9
         }, {
-            value: 18,
-            procent: 13.0
+            value: 60,
+            procent: 28.9
         }],
         type: 'months'
     }
 ];
 
-type DepositAgreementFormPops = {
+type CreditAgreementFormPops = {
     onCreate: (data: any) => void;
 };
 
@@ -50,48 +75,49 @@ interface map {
     [key: string]: string
 }
 
-export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPops) => {
+export const CreditAgreementForm = observer(({onCreate}: CreditAgreementFormPops) => {
     const {currency} = useContext(RootStoreContext);
 
     useEffect(() => {
         currency.fetchItems();
     }, [currency]);
-    const [depositProgramValue, setDepositProgramValue] = useState<DepType | undefined>(undefined);
+    const [crediteProgramValue, setCreditProgramValue] = useState<DepType | undefined>(undefined);
     const [currencyValue, setCurrencyValue] = useState<string | undefined>(undefined);
     const [startDateValue, setStartDateValue] = useState<moment.Moment>(moment());
     const [endDateValue, setEndDateValue] = useState<moment.Moment>(moment().add(1, 'd'));
 
     const [countsValue, setCountValue] = useState<CountType | undefined>(undefined);
     const [amountMoney, setAmountMoney] = useState<number>(50);
-    const depositPrograms: DepType[] = depositsPlans;
+    const creditePrograms: DepType[] = creditesPlans;
 
     const tailLayout = {
         wrapperCol: {offset: 8, span: 16},
     };
 
     const onSave = () => {
-        if (depositProgramValue?.id && currencyValue && currency && countsValue) {
-            const deposit = {
-                programId: depositProgramValue?.id,
+        if (crediteProgramValue?.id && currencyValue && currency && countsValue) {
+            const credite = {
+                programId: crediteProgramValue?.id,
                 currency: currencyValue,
                 startDate: startDateValue.toDate(),
                 endDate: endDateValue.toDate(),
                 percents: countsValue.procent,
                 amount: amountMoney
             }
-            onCreate(deposit);
+            onCreate(credite);
         } else {
             notification.error({
                 message: 'Check values',
                 placement: 'bottomLeft'
             })
         }
+
     }
 
-    const countDays: CountType[] = depositProgramValue?.countDays ?? [];
+    const countDays: CountType[] = crediteProgramValue?.countDays ?? [];
 
     const handleChangeDepProg = (value?: DepType) => {
-        setDepositProgramValue(value);
+        setCreditProgramValue(value);
         const countDay = value?.countDays[0];
         setCountValue(countDay);
         if (value && countDay) {
@@ -100,14 +126,13 @@ export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPo
     };
 
     const handleChangeCountsDayValue = (value: number) => {
-        setCountValue(depositProgramValue?.countDays.find(c => c.value == value));
-        if (depositProgramValue) {
-            setEndDateValue(startDateValue.clone().add(value, depositProgramValue.type));
+        setCountValue(crediteProgramValue?.countDays.find(c => c.value == value));
+        if (crediteProgramValue) {
+            setEndDateValue(startDateValue.clone().add(value, crediteProgramValue.type));
         }
     };
 
-    const countMessageType = depositProgramValue ? depositProgramValue?.type === 'months' ? 'month' : 'days' : '';
-
+    const countMessageType = crediteProgramValue ? crediteProgramValue?.type === 'months' ? 'month' : 'days' : '';
     return (
         <Form
             labelCol={{span: 4}}
@@ -116,13 +141,13 @@ export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPo
             size={'large'}
             onFinish={onSave}
         >
-            <Form.Item label={'Deposit program'} help={depositProgramValue ? '' : 'Choose deposit program'}
-                       validateStatus={depositProgramValue ? 'success' : 'error'}>
+            <Form.Item label={'Credit program'} help={crediteProgramValue ? '' : 'Choose credit program'}
+                       validateStatus={crediteProgramValue ? 'success' : 'error'}>
                 <Select
-                    onChange={(value) => handleChangeDepProg(depositPrograms.find(dep => dep.id === Number(value)))}
-                    value={depositProgramValue?.name}>
+                    onChange={(value) => handleChangeDepProg(creditePrograms.find(dep => dep.id === Number(value)))}
+                    value={crediteProgramValue?.name}>
                     {
-                        depositPrograms.map((value) => {
+                        creditePrograms.map((value) => {
                             return <Select.Option key={value.id} value={value.id}>{value.name}</Select.Option>
                         })
                     }
@@ -141,7 +166,7 @@ export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPo
                 </Select>
             </Form.Item>
 
-            <Form.Item label={'Deposit interest:'}>
+            <Form.Item label={'Credit interest:'}>
                 <Input disabled value={countsValue?.procent ? `${countsValue.procent}%` : ''}/>
             </Form.Item>
 
@@ -156,29 +181,29 @@ export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPo
                 </Select>
             </Form.Item>
 
-            <Form.Item label={'Start deposit program'}>
+            <Form.Item label={'Start credit program'}>
                 <DatePicker value={startDateValue} onChange={(date) => {
                     if (date) {
                         setStartDateValue(date);
-                        if (depositProgramValue && countsValue) {
-                            setEndDateValue(date.clone().add(countsValue?.value, depositProgramValue.type));
+                        if (crediteProgramValue && countsValue) {
+                            setEndDateValue(date.clone().add(countsValue?.value, crediteProgramValue.type));
                         }
                     } else {
                         setStartDateValue(moment());
-                        if (depositProgramValue && countsValue) {
-                            setEndDateValue(moment().add(countsValue?.value, depositProgramValue.type));
+                        if (crediteProgramValue && countsValue) {
+                            setEndDateValue(moment().clone().add(countsValue.value, crediteProgramValue.type));
                         }
                     }
                 }}/>
             </Form.Item>
 
-            <Form.Item label={'End deposit program'}>
+            <Form.Item label={'End credit program'}>
                 <DatePicker value={endDateValue} disabled={true}/>
             </Form.Item>
             <Form.Item label={'Amount money'}>
                 <InputNumber
                     min={50}
-                    max={2000000}
+                    max={15000}
                     value={Number(amountMoney)}
                     parser={value => value ? value.replace(/\s?|(,*)/g, '') : '0'}
                     onChange={(value) => setAmountMoney(value as number)}

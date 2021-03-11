@@ -8,9 +8,6 @@ import javax.validation.constraints.Pattern
 data class RequestContract(
         @JsonProperty("programId")
         val programId : Long,
-        @JsonProperty("contractNumber")
-        @Pattern(regexp = "[0-9]{1,63}")
-        val contractNumber: String,
         @JsonProperty("currency")
         val currency: CurrencyEnum,
         @JsonProperty("startDate")

@@ -2,16 +2,17 @@ import React from 'react';
 import {User} from 'app/entity/User';
 import {Card} from 'antd';
 import Meta from 'antd/es/card/Meta';
-import {DiffOutlined, DeleteFilled, EditOutlined} from '@ant-design/icons';
+import {DeleteFilled, DiffOutlined, EditOutlined, SnippetsOutlined} from '@ant-design/icons';
 
 type UserProps = {
     user: User,
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
     onCreateDep: (id: string) => void;
+    onCreateCredit: (id: string) => void;
 }
 
-export const UserComponent = ({user, onDelete, onEdit, onCreateDep}: UserProps) => {
+export const UserComponent = ({user, onDelete, onEdit, onCreateDep, onCreateCredit}: UserProps) => {
 
     const titleCard = `${user.surname} ${user.name} ${user.patronymic}`;
 
@@ -25,11 +26,16 @@ export const UserComponent = ({user, onDelete, onEdit, onCreateDep}: UserProps) 
     const handleCreateDep = () => {
         onCreateDep(user.id);
     }
+    const handleCreateCredit = () => {
+        onCreateCredit(user.id);
+    }
 
     return (
         <Card
             style={{width: 300}}
-            actions={[<DiffOutlined onClick={handleCreateDep} key={'createDep'}/>,
+            actions={[
+                <SnippetsOutlined onClick={handleCreateCredit} key={'create credit'}/>,
+                <DiffOutlined onClick={handleCreateDep} key={'createDep'}/>,
                 <EditOutlined onClick={handleEdit} key="edit"/>,
                 <DeleteFilled key={'delete'} onClick={handleDelete}/>]}>
             <Meta
