@@ -25,7 +25,7 @@ class AccountService @Autowired constructor(
     fun closeAccounts(contract: Contract) {
         val accounts = accountRepository.findAccountsByContract(contract);
         val bankAccount = accountRepository.findAccountByAccountCode(AccountCodes.BDF.code)
-        accounts.map { acc ->
+        accounts.filter {it.status != StatusEnum.CLOSED }.map { acc ->
             acc.status = StatusEnum.CLOSED
             if (acc.accountCode == AccountCodes.DEP.code) {
                 acc.credit.plus(contract.amount)
