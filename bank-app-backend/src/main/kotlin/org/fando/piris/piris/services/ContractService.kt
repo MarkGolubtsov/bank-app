@@ -9,6 +9,9 @@ import org.fando.piris.piris.models.RequestContract
 import org.fando.piris.piris.repositories.ContractRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.transaction.Transactional
 
 @Service
@@ -51,5 +54,5 @@ class ContractService @Autowired constructor(
 
     fun getAllContracts() = contractRepository.findAll()
 
-    private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}"
+    private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}${Timestamp.valueOf(LocalDateTime.now())}"
 }

@@ -5,6 +5,9 @@ export class Routes {
     public static createDepositAgreement(id: string){
         return '/agreement/deposit/clients/' + id;
     };
+    public static createCreditAgreement(id: string){
+        return '/agreement/credit/clients/' + id;
+    };
     public static editUser(id: string) {
         return '/users/edit/' + id
     }
