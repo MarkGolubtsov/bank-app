@@ -1,6 +1,7 @@
 package org.fando.piris.piris.controllers
 
 import org.fando.piris.piris.models.RequestContract
+import org.fando.piris.piris.models.StatusEnum
 import org.fando.piris.piris.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -16,7 +17,8 @@ class ContractController @Autowired constructor(
         private val clientService: ClientService,
         private val depositService: DepositService,
         private val creditService: CreditsService,
-        private val responseService: ResponseService
+        private val responseService: ResponseService,
+        private val accountService: AccountService
 ) {
 
     @PostMapping("deposits/{clientId}")
@@ -27,7 +29,9 @@ class ContractController @Autowired constructor(
         return if (!(client.isPresent && deposit.isPresent)) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client or deposit with given id not found")
         } else {
-            contractService.createContract(requestContract, deposit.get(), client.get())
+            val contract = contractService.createContract(requestContract, deposit.get(), client.get())
+            accountService.createDepositAccounts(client.get(), contract)
+            accountService.replenishBankAccount(requestContract.amount)
             ResponseEntity.ok().build()
         }
     }
@@ -40,12 +44,27 @@ class ContractController @Autowired constructor(
         return if (!(client.isPresent && credit.isPresent)) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client or credit with given id not found")
         } else {
-            contractService.createContract(requestContract, credit.get(), client.get())
+            val contract = contractService.createContract(requestContract, credit.get(), client.get())
+            accountService.createCreditAccounts(client.get(), contract);
+            accountService.getFromBankAccount(requestContract.amount)
             ResponseEntity.ok().build()
         }
     }
 
-    @GetMapping("all")
+    @PostMapping("deposits/withdraw/{contractNumber}")
+    fun withdrawDeposit(@PathVariable("contractNumber") contractNumber: String): ResponseEntity<Any> {
+        val contract = contractService.findContractByNumber(contractNumber);
+        return if (contract == null) {
+            ResponseEntity.badRequest().body("Contract not found")
+        } else {
+            contractService.updateContractStatus(contract, StatusEnum.CLOSED)
+            accountService.closeAccounts(contract)
+            ResponseEntity.ok().build()
+        }
+
+    }
+
+    @GetMapping("")
     fun getAllContracts() =
             ResponseEntity.ok(responseService.generateResponseContractEntity(contractService.getAllContracts()))
 

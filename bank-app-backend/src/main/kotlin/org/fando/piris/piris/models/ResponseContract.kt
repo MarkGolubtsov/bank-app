@@ -31,6 +31,8 @@ data class ResponseContract(
         @JsonProperty("depositName")
         val depositType: String? = null,
         @JsonProperty("creditName")
-        val creditType: String? = null
+        val creditType: String? = null,
+        @JsonProperty("status")
+        val status: StatusEnum
 ) {
 }

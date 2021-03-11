@@ -7,16 +7,18 @@ import javax.persistence.*
 
 @Entity
 open class Account(
-        open val accountCode: String, //TODO: replace with relation to code
+        open val accountCode: Int,
         open val accountNumber: String,
         @Enumerated(EnumType.STRING)
         open val accountType: AccountTypeEnum,
-        open val debit: BigDecimal,
-        open val credit: BigDecimal,
-        open val surplus: BigDecimal,
+        open var debit: BigDecimal,
+        open var credit: BigDecimal,
+        open var surplus: BigDecimal,
         @ManyToOne
-        open var client: Client,
+        open val client: Client,
         @Enumerated(EnumType.STRING)
-        open var status: StatusEnum
+        open var status: StatusEnum,
+        @ManyToOne
+        open val contract: Contract
 ) : AbstractJpaPersistable() {
 }

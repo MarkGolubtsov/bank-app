@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ContractRepository : JpaRepository<Contract, Long> {
+
+    fun findByNumber(number: String): Contract?
 }

@@ -70,10 +70,28 @@ class ResponseService {
                     contract.client.id,
                     contract.contractType,
                     contract.depositType?.depositName,
-                    contract.creditType?.creditName
+                    contract.creditType?.creditName,
+                    contract.status
             )
 
     fun generateResponseContractEntity(contracts: List<Contract>) =
             contracts.map { contract -> generateResponseContractEntity(contract) }
+
+    fun generateResponseAccountEntity(accounts: List<Account>) =
+            accounts.map { acc -> generateResponseAccountEntity(acc) }
+
+    fun generateResponseAccountEntity(account: Account) =
+            ResponseAccount(
+                    account.accountCode,
+                    account.accountNumber,
+                    account.accountType,
+                    account.debit,
+                    account.credit,
+                    account.surplus,
+                    account.client.id,
+                    account.status
+            )
+
+
 
 }

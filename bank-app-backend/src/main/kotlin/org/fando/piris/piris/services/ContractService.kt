@@ -6,6 +6,7 @@ import org.fando.piris.piris.entities.Credits
 import org.fando.piris.piris.entities.Deposits
 import org.fando.piris.piris.models.ContractTypeEnum
 import org.fando.piris.piris.models.RequestContract
+import org.fando.piris.piris.models.StatusEnum
 import org.fando.piris.piris.repositories.ContractRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -20,6 +21,13 @@ class ContractService @Autowired constructor(
         private val contractRepository: ContractRepository
 ) {
 
+    fun findContractByNumber(contractNumber: String) = contractRepository.findByNumber(contractNumber)
+
+    fun updateContractStatus(contract: Contract, status: StatusEnum) {
+        contract.status = status
+        contractRepository.save(contract)
+    }
+
     fun createContract(requestContract: RequestContract, deposits: Deposits, client: Client): Contract {
         val contractNumber: String = generateContractNumber(client)
         val contract = Contract(
@@ -31,7 +39,8 @@ class ContractService @Autowired constructor(
                 requestContract.percents,
                 client,
                 ContractTypeEnum.DEPOSIT,
-                depositType = deposits
+                StatusEnum.ACTIVE,
+                depositType = deposits,
                 )
         return contractRepository.save(contract)
     }
@@ -47,12 +56,13 @@ class ContractService @Autowired constructor(
                 requestContract.percents,
                 client,
                 ContractTypeEnum.CREDIT,
+                StatusEnum.ACTIVE,
                 creditType = credit
         )
         return contractRepository.save(contract)
     }
 
-    fun getAllContracts() = contractRepository.findAll()
+    fun getAllContracts(): List<Contract> = contractRepository.findAll()
 
     private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}${Timestamp.valueOf(LocalDateTime.now()).time}"
 }
