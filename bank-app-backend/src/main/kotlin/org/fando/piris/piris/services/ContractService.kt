@@ -17,8 +17,9 @@ class ContractService @Autowired constructor(
 ) {
 
     fun createContract(requestContract: RequestContract, deposits: Deposits, client: Client): Contract {
+        val contractNumber: String = generateContractNumber(client)
         val contract = Contract(
-                requestContract.contractNumber,
+                contractNumber,
                 deposits,
                 requestContract.currency,
                 requestContract.contractStartDate,
@@ -30,4 +31,6 @@ class ContractService @Autowired constructor(
         )
         return contractRepository.save(contract)
     }
+
+    private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}"
 }
