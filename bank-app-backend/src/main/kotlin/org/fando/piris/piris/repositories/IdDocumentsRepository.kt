@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface IdDocumentsRepository : JpaRepository<IdDocument, Long> {
+
+    fun existsByPassportNumber(passportNumber: String): Boolean
 }

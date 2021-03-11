@@ -1,9 +1,6 @@
 package org.fando.piris.piris.entities
 
-import org.fando.piris.piris.models.CountriesEnum
-import org.fando.piris.piris.models.DisabilityEnum
-import org.fando.piris.piris.models.FamilyStatusEnum
-import org.fando.piris.piris.models.GenderEnum
+import org.fando.piris.piris.models.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.*
@@ -38,6 +35,8 @@ open class Client(
         open var isPensioner: Boolean,
         open var monthlyIncome: BigDecimal?,
         open var isMilitaryPerson: Boolean,
+        @Enumerated(EnumType.STRING)
+        open var clientStatus: ClientStatus,
         @OneToMany(mappedBy = "client")
         open var accounts: MutableList<Account> = mutableListOf(),
         @OneToMany(mappedBy = "client")

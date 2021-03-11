@@ -13,6 +13,9 @@ class IdDocumentService @Autowired constructor(
         val idDocumentsRepository: IdDocumentsRepository
 ) {
 
+    fun isDocumentExistsByPassportNum(passportNumber: String): Boolean =
+            idDocumentsRepository.existsByPassportNumber(passportNumber)
+
     fun saveDocument(documentInfo: IdDocumentInfo): IdDocument {
         val idDocument = IdDocument(
                 documentInfo.passportSeries,

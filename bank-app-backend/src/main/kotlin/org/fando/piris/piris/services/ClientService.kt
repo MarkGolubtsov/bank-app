@@ -3,6 +3,7 @@ package org.fando.piris.piris.services
 import org.fando.piris.piris.entities.Address
 import org.fando.piris.piris.entities.Client
 import org.fando.piris.piris.entities.IdDocument
+import org.fando.piris.piris.models.ClientStatus
 import org.fando.piris.piris.models.RequestClient
 import org.fando.piris.piris.models.ResponseClient
 import org.fando.piris.piris.repositories.ClientRepository
@@ -38,7 +39,8 @@ class ClientService @Autowired constructor(
                 requestClient.disability,
                 requestClient.isPensioner,
                 requestClient.monthlyIncome,
-                requestClient.isMilitaryPerson
+                requestClient.isMilitaryPerson,
+                ClientStatus.ACTIVE
         )
         return clientRepository.save(client)
     }
@@ -75,9 +77,9 @@ class ClientService @Autowired constructor(
         }
     }
 
-    @Throws(EmptyResultDataAccessException::class)
-    fun deleteClient(clientId: Long) {
-        clientRepository.deleteById(clientId)
+    fun deactivateClient(client: Client) {
+        client.clientStatus = ClientStatus.INACTIVE
+        clientRepository.save(client)
     }
 
 

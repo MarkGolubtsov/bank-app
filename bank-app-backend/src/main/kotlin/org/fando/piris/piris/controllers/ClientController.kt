@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 
 @RestController
@@ -24,7 +25,11 @@ class ClientController @Autowired constructor(
 ) {
 
     @PostMapping()
-    fun createClient(@RequestBody requestClient: RequestClient): ResponseEntity<ResponseClient> {
+    fun createClient(@Valid @RequestBody requestClient: RequestClient): ResponseEntity<Any> {
+        val isClientExists = idDocumentService.isDocumentExistsByPassportNum(requestClient.idDocument.passportNumber)
+        if (isClientExists) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client already exists")
+        }
         val idDocument = idDocumentService.saveDocument(requestClient.idDocument)
         val residentialAddress = addressesService.saveAddress(requestClient.residentialAddress)
         val client = clientService.saveClient(requestClient, idDocument, residentialAddress)
@@ -45,7 +50,7 @@ class ClientController @Autowired constructor(
 
     @PutMapping("{id}")
     fun updateClient(@PathVariable("id") clientId: Long, @RequestBody requestClient: RequestClient): ResponseEntity<Any> {
-        val client = clientService.updateClient(clientId, requestClient);
+        val client = clientService.updateClient(clientId, requestClient)
         return if (client == null) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
         } else {
@@ -54,13 +59,15 @@ class ClientController @Autowired constructor(
     }
 
     @DeleteMapping("{id}")
-    fun deleteClient(@PathVariable("id") clientId: Long): ResponseEntity<Any> {
-        try {
-            clientService.deleteClient(clientId)
-        } catch (e: EmptyResultDataAccessException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
+    fun deactivateClient(@PathVariable("id") clientId: Long): ResponseEntity<Any> {
+        val client = clientService.getClientById(clientId)
+        return if (!client.isPresent) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client with given id not found")
+        } else {
+            clientService.deactivateClient(client.get())
+            ResponseEntity.ok().build()
         }
-        return ResponseEntity.ok().build()
+
     }
 
     @GetMapping("")

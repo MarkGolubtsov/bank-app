@@ -156,11 +156,7 @@ class AccountService @Autowired constructor(
         )
     }
 
-    private fun generateAccountNumber(accountCode: Int, client: Client): String = """
-        |$accountCode
-        |${client.idDocument.passportNumber.substring(0, 5)}
-        |${(client.accounts.size + 1).toString().padStart(3, '0')}
-        |${Random.nextInt(0, 9)}
-        |""".trimMargin()
+    private fun generateAccountNumber(accountCode: Int, client: Client): String =
+            "$accountCode${client.idDocument.passportNumber.substring(0, 5)}${(client.accounts.size + 1).toString().padStart(3, '0')}${Random.nextInt(0, 9)}"
 
 }
