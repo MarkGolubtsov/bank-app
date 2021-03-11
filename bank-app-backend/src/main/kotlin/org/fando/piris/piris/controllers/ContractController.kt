@@ -1,10 +1,7 @@
 package org.fando.piris.piris.controllers
 
 import org.fando.piris.piris.models.RequestContract
-import org.fando.piris.piris.services.ClientService
-import org.fando.piris.piris.services.ContractService
-import org.fando.piris.piris.services.DepositService
-import org.fando.piris.piris.services.ResponseService
+import org.fando.piris.piris.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,9 +12,11 @@ import javax.validation.Valid
 @RequestMapping("contracts")
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class ContractController @Autowired constructor(
-        val contractService: ContractService,
-        val clientService: ClientService,
-        val depositService: DepositService
+        private val contractService: ContractService,
+        private val clientService: ClientService,
+        private val depositService: DepositService,
+        private val creditService: CreditsService,
+        private val responseService: ResponseService
 ) {
 
     @PostMapping("deposits/{clientId}")
@@ -32,4 +31,22 @@ class ContractController @Autowired constructor(
             ResponseEntity.ok().build()
         }
     }
+
+    @PostMapping("credits/{clientId}")
+    fun createCreditContract(@Valid @RequestBody requestContract: RequestContract,
+                              @PathVariable("clientId") clientId: Long) : ResponseEntity<Any> {
+        val client = clientService.getClientById(clientId)
+        val credit = creditService.getCreditById(requestContract.programId)
+        return if (!(client.isPresent && credit.isPresent)) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Client or credit with given id not found")
+        } else {
+            contractService.createContract(requestContract, credit.get(), client.get())
+            ResponseEntity.ok().build()
+        }
+    }
+
+    @GetMapping("all")
+    fun getAllContracts() =
+            ResponseEntity.ok(responseService.generateResponseContractEntity(contractService.getAllContracts()))
+
 }

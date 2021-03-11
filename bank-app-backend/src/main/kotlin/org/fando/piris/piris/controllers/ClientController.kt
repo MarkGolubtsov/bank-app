@@ -63,7 +63,7 @@ class ClientController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping("")
+    @GetMapping("all")
     fun getAllClients(): ResponseEntity<List<ResponseClient>> {
         val clients = clientService.getAllClients()
         return ResponseEntity.ok(responseService.generateResponseClientEntity(clients))

@@ -6,16 +6,19 @@ import java.time.LocalDate
 import javax.validation.constraints.Pattern
 
 data class RequestContract(
-        @JsonProperty("depositProgramId")
+        @JsonProperty("programId")
         val programId : Long,
+        @JsonProperty("contractNumber")
+        @Pattern(regexp = "[0-9]{1,63}")
+        val contractNumber: String,
         @JsonProperty("currency")
         val currency: CurrencyEnum,
-        @JsonProperty("depositStartDate")
-        val depositStartDate: LocalDate,
-        @JsonProperty("depositEndDate")
-        val depositEndDate: LocalDate,
-        @JsonProperty("depositAmount")
-        val depositAmount: BigDecimal,
+        @JsonProperty("startDate")
+        val startDate: LocalDate,
+        @JsonProperty("endDate")
+        val endDate: LocalDate,
+        @JsonProperty("amount")
+        val amount: BigDecimal,
         @JsonProperty("percents")
         val percents: Double
 )

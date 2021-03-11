@@ -14,11 +14,6 @@ class DepositsController  @Autowired constructor(
         val responseService: ResponseService
 ) {
 
-//    @PostMapping()
-//    fun createDeposit(@Valid @RequestBody requestDeposit: RequestDeposit) : ResponseEntity<Any> {
-//
-//    }
-
     @GetMapping("all")
     fun getDepositPrograms() : ResponseEntity<List<ResponseDeposit>> {
         val depositPrograms = depositService.getAllDeposits();

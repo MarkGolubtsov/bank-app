@@ -9,8 +9,6 @@ import javax.persistence.*
 @Entity
 open class Contract(
         open val number: String,
-        @OneToOne
-        open val depositType: Deposits, //TODO: replace with deposit info
         open val currency: CurrencyEnum,
         open val contractStartDate: LocalDate,
         open val contractEndDate: LocalDate,
@@ -19,7 +17,11 @@ open class Contract(
         @ManyToOne
         open val client: Client,
         @Enumerated(EnumType.STRING)
-        open val contractType: ContractTypeEnum
+        open val contractType: ContractTypeEnum,
+        @OneToOne
+        open val depositType: Deposits? = null, //TODO: replace with deposit info
+        @OneToOne
+        open val creditType: Credits? = null
 
 ) : AbstractJpaPersistable() {
 }

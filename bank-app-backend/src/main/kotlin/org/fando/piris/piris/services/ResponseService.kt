@@ -1,9 +1,6 @@
 package org.fando.piris.piris.services
 
-import org.fando.piris.piris.entities.Address
-import org.fando.piris.piris.entities.Client
-import org.fando.piris.piris.entities.Deposits
-import org.fando.piris.piris.entities.IdDocument
+import org.fando.piris.piris.entities.*
 import org.fando.piris.piris.models.*
 import org.springframework.stereotype.Service
 
@@ -62,5 +59,21 @@ class ResponseService {
                     deposit.depositName,
             )
 
+    fun generateResponseContractEntity(contract: Contract) =
+            ResponseContract(
+                    contract.number,
+                    contract.currency,
+                    contract.contractStartDate,
+                    contract.contractEndDate,
+                    contract.amount,
+                    contract.percents,
+                    contract.client.id,
+                    contract.contractType,
+                    contract.depositType?.depositName,
+                    contract.creditType?.creditName
+            )
+
+    fun generateResponseContractEntity(contracts: List<Contract>) =
+            contracts.map { contract -> generateResponseContractEntity(contract) }
 
 }
