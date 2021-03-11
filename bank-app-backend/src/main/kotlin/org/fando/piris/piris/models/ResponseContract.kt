@@ -23,7 +23,7 @@ data class ResponseContract(
         @JsonProperty("amount")
         val amount: BigDecimal,
         @JsonProperty("percents")
-        val percents: Double,
+        val percents: BigDecimal,
         @JsonProperty("clientId")
         val clientId: Long?,
         @JsonProperty("contractType")

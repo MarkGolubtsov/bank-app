@@ -1,13 +1,18 @@
 package org.fando.piris.piris.controllers
 
 import org.fando.piris.piris.models.*
+import org.fando.piris.piris.repositories.AccountRepository
+import org.fando.piris.piris.services.AccountService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("supporting")
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
-class SupportingApiController {
+class SupportingApiController @Autowired constructor(
+        private val accountService: AccountService
+) {
 
     @GetMapping("countries")
     fun getCountries() = ResponseEntity.ok(CountriesEnum.values())
@@ -32,6 +37,9 @@ class SupportingApiController {
         else -> ResponseEntity.badRequest().body("Invalid country passed")
     }
 
-    @GetMapping("close")
-    fun closeDay() = ResponseEntity.ok("Закрыто нахуй")
+    @PostMapping("close")
+    fun closeDay(): ResponseEntity<Any> {
+        accountService.closeDay()
+        return ResponseEntity.ok().build()
+    }
 }

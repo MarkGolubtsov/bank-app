@@ -1,5 +1,6 @@
 package org.fando.piris.piris.services
 
+import jdk.nashorn.internal.parser.DateParser.DAY
 import org.fando.piris.piris.entities.Account
 import org.fando.piris.piris.entities.Client
 import org.fando.piris.piris.entities.Contract
@@ -10,6 +11,8 @@ import org.fando.piris.piris.repositories.AccountRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.transaction.Transactional
 import kotlin.random.Random
 
@@ -53,6 +56,40 @@ class AccountService @Autowired constructor(
     fun createCreditAccounts(client: Client, contract: Contract) {
         createCreditAccount(client, contract)
         createPercentsCreditAccount(client, contract)
+    }
+
+    fun closeDay() {
+        val accounts = accountRepository.findAll()
+        val bankAccount = accounts.first { it.accountCode == AccountCodes.BDF.code }
+        val percentsDepAccounts = accounts.filter { it.accountCode == AccountCodes.DEPPRC.code }
+        val debitAccounts = accounts.filter { it.accountCode == AccountCodes.DEP.code }
+        percentsDepAccounts.forEach {
+            val contract = it.contract
+            val depositTermInDays = ChronoUnit.DAYS.between(contract.contractStartDate, contract.contractEndDate)
+            val percentsAmount = contract.amount.multiply(contract.percents).multiply(BigDecimal(depositTermInDays)).divide(BigDecimal(365))
+            val totalAmount = percentsAmount.divide(BigDecimal(100))
+            it.credit.plus(totalAmount)
+            bankAccount.debit.plus(totalAmount)
+            it.surplus = it.credit.minus(it.debit)
+            if (LocalDate.now().compareTo(contract.contractEndDate) == 0) {
+                contract.status = StatusEnum.CLOSED
+                it.status = StatusEnum.CLOSED
+            }
+            accountRepository.save(it)
+        }
+        debitAccounts.forEach {
+            val contract = it.contract
+            if (LocalDate.now().compareTo(contract.contractEndDate) == 0) {
+                contract.status = StatusEnum.CLOSED
+                it.status = StatusEnum.CLOSED
+                it.credit = contract.amount
+                it.surplus = it.credit.minus(it.debit)
+                bankAccount.debit = contract.amount
+            }
+            accountRepository.save(it)
+        }
+        bankAccount.surplus = bankAccount.credit.minus(bankAccount.debit)
+        accountRepository.save(bankAccount)
     }
 
     private fun createCreditAccount(client: Client, contract: Contract) {

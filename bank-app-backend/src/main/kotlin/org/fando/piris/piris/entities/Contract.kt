@@ -15,7 +15,7 @@ open class Contract(
         open val contractStartDate: LocalDate,
         open val contractEndDate: LocalDate,
         open val amount: BigDecimal,
-        open val percents: Double,
+        open val percents: BigDecimal,
         @ManyToOne
         open val client: Client,
         @Enumerated(EnumType.STRING)

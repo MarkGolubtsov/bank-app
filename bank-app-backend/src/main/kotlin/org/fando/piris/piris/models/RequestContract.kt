@@ -17,5 +17,5 @@ data class RequestContract(
         @JsonProperty("amount")
         val amount: BigDecimal,
         @JsonProperty("percents")
-        val percents: Double
+        val percents: BigDecimal
 )
