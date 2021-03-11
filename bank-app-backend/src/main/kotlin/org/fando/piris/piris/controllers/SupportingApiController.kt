@@ -31,4 +31,7 @@ class SupportingApiController {
         CountriesEnum.UKR -> ResponseEntity.ok(UkraineCities.values().map { it.city })
         else -> ResponseEntity.badRequest().body("Invalid country passed")
     }
+
+    @GetMapping("close")
+    fun closeDay() = ResponseEntity.ok("Закрыто нахуй")
 }
