@@ -10,6 +10,7 @@ export class RootStore {
     private readonly _disabilities = new ItemsStore<string>(endpoints.disabilities);
     private readonly _gender = new ItemsStore<string>(endpoints.gender);
     private readonly _countries = new ItemsStore<string>(endpoints.countries)
+    private readonly _currency = new ItemsStore<string>(endpoints.currency)
 
     get usersStore() {
         return this._usersStore;
@@ -37,5 +38,8 @@ export class RootStore {
 
     get countries() {
         return this._countries;
+    }
+    get currency() {
+        return this._currency;
     }
 }

@@ -9,7 +9,6 @@ export const HeaderContainer = () => {
     const history = useHistory();
     const goUsers = () => history.push(Routes.users);
     const goCreateUser = () => history.push(Routes.createUser);
-
     return (
         <Header style={{position: 'fixed', zIndex: 1, width: '100%'}}>
             <div className="logo"/>

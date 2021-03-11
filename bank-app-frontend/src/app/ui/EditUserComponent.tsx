@@ -5,7 +5,7 @@ import {RootStoreContext} from 'app/RootStoreContext';
 import {User} from 'app/entity/User';
 
 
-interface MatchId {
+export interface MatchId {
     id?: string
 }
 

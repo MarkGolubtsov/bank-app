@@ -1,4 +1,4 @@
-import {makeAutoObservable, runInAction, toJS} from "mobx";
+import {makeAutoObservable, observable, runInAction, toJS} from "mobx";
 import {RequestService} from 'app/api/RequestService';
 
 

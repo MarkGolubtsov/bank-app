@@ -91,6 +91,7 @@ export const UserForm = observer((props: UserFormProps) => {
         initialValues.residentialAddress[5].apartmentsNumber = initialValues.residentialAddress[5].apartmentsNumber ? String(initialValues.residentialAddress[5].apartmentsNumber) : '0';
         initialValues.passport[4].dateOfIssue = moment(initialValues.passport[4].dateOfIssue)
     }
+
     return (
         <>
             <Form

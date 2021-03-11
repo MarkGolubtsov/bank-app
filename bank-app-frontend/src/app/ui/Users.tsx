@@ -24,10 +24,14 @@ export const Users = observer(() => {
         });
     }
 
+    const handleCreateDep = (id: string) =>{
+        history.push(Routes.createDepositAgreement(id));
+    }
+
     return (
         <div className="site-layout-background" style={{padding: 24}}>
             {usersStore.items.map((item) => {
-                return <UserComponent key={item.id} user={item} onDelete={handleDelete} onEdit={handleEdit}/>
+                return <UserComponent  onCreateDep={handleCreateDep} key={item.id} user={item} onDelete={handleDelete} onEdit={handleEdit}/>
             })}
         </div>
     )

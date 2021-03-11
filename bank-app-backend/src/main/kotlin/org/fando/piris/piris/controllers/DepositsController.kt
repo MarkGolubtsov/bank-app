@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("deposit")
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class DepositsController  @Autowired constructor(
         val depositService: DepositService,
         val responseService: ResponseService

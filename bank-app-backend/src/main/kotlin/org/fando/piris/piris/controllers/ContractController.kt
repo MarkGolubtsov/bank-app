@@ -13,6 +13,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("contracts")
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class ContractController @Autowired constructor(
         val contractService: ContractService,
         val clientService: ClientService,

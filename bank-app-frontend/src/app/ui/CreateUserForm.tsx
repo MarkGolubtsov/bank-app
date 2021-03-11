@@ -13,6 +13,8 @@ export const CreateUSerForm = () =>{
     const onSave = (user: User) => {
         usersStore.createItem(user).then(() => {
             history.push(Routes.users);
+        }).catch(()=>{
+
         });
     }
 
