@@ -2,6 +2,8 @@ export class Routes {
 
     public static users = '/users';
     public static createUser = '/users/create';
+    public static contracts = '/contracts';
+    public static accounts = '/accounts';
     public static createDepositAgreement(id: string){
         return '/agreement/deposit/clients/' + id;
     };
@@ -11,5 +13,6 @@ export class Routes {
     public static editUser(id: string) {
         return '/users/edit/' + id
     }
+
 
 }

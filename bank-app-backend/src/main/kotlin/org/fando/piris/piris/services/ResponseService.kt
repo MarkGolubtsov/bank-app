@@ -88,7 +88,7 @@ class ResponseService {
                     account.debit,
                     account.credit,
                     account.surplus,
-                    account.client.id,
+                    account.client?.id,
                     account.status
             )
 
