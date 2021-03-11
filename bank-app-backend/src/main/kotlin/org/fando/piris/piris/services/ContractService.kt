@@ -54,5 +54,5 @@ class ContractService @Autowired constructor(
 
     fun getAllContracts() = contractRepository.findAll()
 
-    private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}${Timestamp.valueOf(LocalDateTime.now())}"
+    private fun generateContractNumber(client: Client) = "${client.idDocument.idNumber}${client.id}${Timestamp.valueOf(LocalDateTime.now()).time}"
 }
