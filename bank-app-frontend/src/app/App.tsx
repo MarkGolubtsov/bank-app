@@ -10,7 +10,8 @@ import {Content} from 'antd/es/layout/layout';
 import {CreateUSerForm} from 'app/ui/CreateUserForm';
 import {CreateDepositAgreement} from 'app/ui/CreateDepositAgreement';
 import {CreateCreditAgreement} from 'app/ui/CreateCreditAgreement';
-
+import {ContractsView} from 'app/ui/ContractsView';
+import {AccountsView} from 'app/ui/AccountsView';
 
 function App() {
     return (
@@ -23,6 +24,8 @@ function App() {
                             <Route exact path={Routes.users} component={Users}/>
                             <Route exact path={Routes.users + '/edit/:id'} component={EditUserComponent}/>
                             <Route exact path={Routes.createUser} component={CreateUSerForm}/>
+                            <Route exact path={Routes.contracts} component={ContractsView}/>
+                            <Route exact path={Routes.accounts} component={AccountsView}/>
                             <Route exact path={Routes.createDepositAgreement(':id')} component={CreateDepositAgreement}/>
                             <Route exact path={Routes.createCreditAgreement(':id')} component={CreateCreditAgreement}/>
                             <Redirect to={Routes.users}/>

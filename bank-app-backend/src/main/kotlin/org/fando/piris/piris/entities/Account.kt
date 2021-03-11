@@ -15,10 +15,10 @@ open class Account(
         open var credit: BigDecimal,
         open var surplus: BigDecimal,
         @ManyToOne
-        open val client: Client,
+        open val client: Client?,
         @Enumerated(EnumType.STRING)
         open var status: StatusEnum,
         @ManyToOne
-        open val contract: Contract
+        open val contract: Contract?
 ) : AbstractJpaPersistable() {
 }

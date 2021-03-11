@@ -10,6 +10,10 @@ export const endpoints = {
     currency: `${serverUrl}/supporting/currency`,
     gender: `${serverUrl}/supporting/gender`,
     countries: `${serverUrl}/supporting/countries`,
-    createDep:(id: string)=>`${serverUrl}/contracts/deposits/${id}`,
-    createCredit:(id: string)=>`${serverUrl}/contracts/credits/${id}`,
+    createDep: (id: string) => `${serverUrl}/contracts/deposits/${id}`,
+    createCredit: (id: string) => `${serverUrl}/contracts/credits/${id}`,
+    contracts: `${serverUrl}/contracts`,
+    withdraw: (id: string) => `${serverUrl}/contracts/deposits/withdraw/${id}`,
+    accounts: `${serverUrl}/accounts`,
+    closeDay:`${serverUrl}/supporting/close`
 }

@@ -1,6 +1,6 @@
 package org.fando.piris.piris.services
 
-import jdk.nashorn.internal.parser.DateParser.DAY
+
 import org.fando.piris.piris.entities.Account
 import org.fando.piris.piris.entities.Client
 import org.fando.piris.piris.entities.Contract
@@ -11,6 +11,7 @@ import org.fando.piris.piris.repositories.AccountRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.transaction.Transactional
@@ -28,8 +29,8 @@ class AccountService @Autowired constructor(
         accounts.filter {it.status != StatusEnum.CLOSED }.map { acc ->
             acc.status = StatusEnum.CLOSED
             if (acc.accountCode == AccountCodes.DEP.code) {
-                acc.credit.plus(contract.amount)
-                bankAccount.debit.plus(contract.amount)
+                acc.credit = acc.credit.plus(contract.amount)
+                bankAccount.debit = bankAccount.debit.plus(contract.amount)
             }
             accountRepository.save(acc)
         }
@@ -65,30 +66,32 @@ class AccountService @Autowired constructor(
         val debitAccounts = accounts.filter { it.accountCode == AccountCodes.DEP.code }
         percentsDepAccounts.forEach {
             val contract = it.contract
-            val depositTermInDays = ChronoUnit.DAYS.between(contract.contractStartDate, contract.contractEndDate)
-            val percentsAmount = contract.amount.multiply(contract.percents).multiply(BigDecimal(depositTermInDays)).divide(BigDecimal(365))
-            val totalAmount = percentsAmount.divide(BigDecimal(100))
-            it.credit.plus(totalAmount)
-            bankAccount.debit.plus(totalAmount)
-            it.surplus = it.credit.minus(it.debit)
-            if (LocalDate.now().compareTo(contract.contractEndDate) == 0) {
-                contract.status = StatusEnum.CLOSED
+            val depositTermInDays = ChronoUnit.DAYS.between(contract?.contractStartDate, contract?.contractEndDate)
+            val percentsAmount = contract?.amount?.multiply(contract.percents)?.multiply(BigDecimal(depositTermInDays))?.divide(BigDecimal(365), 2, RoundingMode.HALF_UP)
+            val totalAmount = percentsAmount?.divide(BigDecimal(100));
+            if (totalAmount != null) {
+                it.credit.plus(totalAmount)
+                bankAccount.debit.plus(totalAmount)
+            }
+            it.surplus = it.surplus.plus(it.credit.minus(it.debit))
+            if (LocalDate.now().compareTo(contract?.contractEndDate) == 0) {
+                contract?.status = StatusEnum.CLOSED
                 it.status = StatusEnum.CLOSED
             }
             accountRepository.save(it)
         }
         debitAccounts.forEach {
             val contract = it.contract
-            if (LocalDate.now().compareTo(contract.contractEndDate) == 0) {
-                contract.status = StatusEnum.CLOSED
+            if (LocalDate.now().compareTo(contract?.contractEndDate) == 0) {
+                contract?.status = StatusEnum.CLOSED
                 it.status = StatusEnum.CLOSED
-                it.credit = contract.amount
-                it.surplus = it.credit.minus(it.debit)
-                bankAccount.debit = contract.amount
+                it.credit = contract?.amount ?: it.credit
+                it.surplus = it.surplus.plus(it.credit.minus(it.debit))
+                bankAccount.debit = contract?.amount ?: bankAccount.debit
             }
             accountRepository.save(it)
         }
-        bankAccount.surplus = bankAccount.credit.minus(bankAccount.debit)
+        bankAccount.surplus = bankAccount.surplus.plus(bankAccount.credit.minus(bankAccount.debit))
         accountRepository.save(bankAccount)
     }
 
@@ -97,7 +100,7 @@ class AccountService @Autowired constructor(
                 Account(
                         AccountCodes.CRD.code,
                         generateAccountNumber(AccountCodes.CRD.code, client),
-                        AccountTypeEnum.ACTIVE,
+                        AccountTypeEnum.PASSIVE,
                         BigDecimal(0),
                         BigDecimal(0),
                         BigDecimal(0),
@@ -129,7 +132,7 @@ class AccountService @Autowired constructor(
                 Account(
                         AccountCodes.DEP.code,
                         generateAccountNumber(AccountCodes.DEP.code, client),
-                        AccountTypeEnum.ACTIVE,
+                        AccountTypeEnum.PASSIVE,
                         BigDecimal(0),
                         BigDecimal(0),
                         BigDecimal(0),

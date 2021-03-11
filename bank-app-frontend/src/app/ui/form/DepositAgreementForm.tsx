@@ -25,7 +25,11 @@ const depositsPlans: DepType[] = [
         countDays: [{
             value: 100,
             procent: 17.0
-        }],
+        },
+            {
+                value: 3,
+                procent: 17.0
+            }],
         type: 'd'
     },
     {
