@@ -7,6 +7,7 @@ export class Routes {
     public static createDepositAgreement(id: string){
         return '/agreement/deposit/clients/' + id;
     };
+
     public static createCreditAgreement(id: string){
         return '/agreement/credit/clients/' + id;
     };
@@ -14,5 +15,7 @@ export class Routes {
         return '/users/edit/' + id
     }
 
-
+    public static showDateCredit(id: string) {
+        return  '/contracts/' + id;
+    }
 }

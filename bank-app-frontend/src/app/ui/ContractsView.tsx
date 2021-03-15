@@ -5,11 +5,14 @@ import {RootStoreContext} from 'app/RootStoreContext';
 import {ContractsStore} from 'app/store/ContractsStore';
 import {RequestService} from 'app/api/RequestService';
 import {endpoints} from 'app/api/endpoints';
+import {useHistory} from 'react-router';
+import {Routes} from 'app/constants/Routes';
 
 
 export const ContractsView = () => {
     const {usersStore, contracts} = useContext(RootStoreContext);
     const [contractsStore] = useState(() => new ContractsStore(contracts));
+    const history = useHistory();
 
     useEffect(() => {
         usersStore.fetchItems();
@@ -20,6 +23,10 @@ export const ContractsView = () => {
         RequestService.post(endpoints.withdraw(id),{}).finally(()=>{
             contracts.fetchItems();
         });
+    }
+
+    const showDataCredit = (id : string) => {
+        history.push(Routes.showDateCredit(id));
     }
 
     const [userId, setUserId] = useState(-1);
@@ -45,7 +52,7 @@ export const ContractsView = () => {
             </Row>
             <Row>
                 <Col span={24}>
-                    <TableContract onWithdraw={handleOnWithdraw} items={contractsFiltered} users={usersStore.items}/>
+                    <TableContract onShowCreditData={showDataCredit} onWithdraw={handleOnWithdraw} items={contractsFiltered} users={usersStore.items}/>
                 </Col>
             </Row>
         </>

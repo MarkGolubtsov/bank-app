@@ -11,7 +11,7 @@ export class RootStore {
     private readonly _gender = new ItemsStore<string>(endpoints.gender);
     private readonly _countries = new ItemsStore<string>(endpoints.countries)
     private readonly _currency = new ItemsStore<string>(endpoints.currency)
-    private readonly _contracts = new ItemsStore<string>(endpoints.contracts)
+    private readonly _contracts = new ItemsStore<any>(endpoints.contracts)
     private readonly _accounts = new ItemsStore<any>(endpoints.accounts)
 
     get usersStore() {

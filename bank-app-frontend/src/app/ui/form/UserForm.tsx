@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {Button, Form, Switch,} from 'antd';
+import {Button, Form, Input, Switch,} from 'antd';
 import {User} from 'app/entity/User';
 import {RootStoreContext} from 'app/RootStoreContext';
 import {StringFormItem} from 'app/ui/form/StringFormItem';
@@ -102,9 +102,43 @@ export const UserForm = observer((props: UserFormProps) => {
                 initialValues={initialValues}
                 onFinish={onFinish}
             >
-                <StringFormItem name={NAME}/>
-                <StringFormItem name={SURNAME}/>
-                <StringFormItem name={PATRONYMIC}/>
+                <Form.Item name={NAME} label={'Name'} rules={[{
+                    required: true,
+                    message: 'Required'
+                }, {
+                    whitespace: true,
+                    message: 'Write text.'
+                }, {
+                    pattern: new RegExp(/[a-zA-Z]+/),
+                    message: 'Write english letters'
+                }]}>
+                    <Input placeholder={'Name'}/>
+                </Form.Item>
+                <Form.Item name={SURNAME} label={'Surname'} rules={[{
+                    required: true,
+                    message: 'Required'
+                }, {
+                    whitespace: true,
+                    message: 'Write text.'
+                }, {
+                    pattern: new RegExp(/[a-zA-Z]+/),
+                    message: 'Write english letters'
+                }]}>
+                    <Input placeholder={'Surname'}/>
+                </Form.Item>
+                <Form.Item name={PATRONYMIC} label={'Patronymic'} rules={[{
+                    required: true,
+                    message: 'Required'
+                }, {
+                    whitespace: true,
+                    message: 'Write text.'
+                }, {
+                    pattern: new RegExp(/[a-zA-Z]+/),
+                    message: 'Write english letters'
+                }]}>
+                    <Input placeholder={'Patronymic'}/>
+                </Form.Item>
+
                 <DateFormItem name={BIRTHDAY} shortName={'Birthday'}/>
 
                 <Form.Item valuePropName="checked" name={PENSIONER} label="Pensioner">

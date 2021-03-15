@@ -50,9 +50,6 @@ type DepositAgreementFormPops = {
     onCreate: (data: any) => void;
 };
 
-interface map {
-    [key: string]: string
-}
 
 export const DepositAgreementForm = observer(({onCreate}: DepositAgreementFormPops) => {
     const {currency} = useContext(RootStoreContext);

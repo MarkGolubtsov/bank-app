@@ -15,5 +15,6 @@ export const endpoints = {
     contracts: `${serverUrl}/contracts`,
     withdraw: (id: string) => `${serverUrl}/contracts/deposits/withdraw/${id}`,
     accounts: `${serverUrl}/accounts`,
-    closeDay:`${serverUrl}/supporting/close`
+    closeDay:`${serverUrl}/supporting/close`,
+    closeDayDate:`${serverUrl}/supporting/closeDate`
 }

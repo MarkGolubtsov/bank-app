@@ -8,9 +8,10 @@ type TableContractProps = {
     items: any,
     users: User[];
     onWithdraw: (id: string) => void;
+    onShowCreditData: (id: string) => void;
 }
 
-export const TableContract = observer(({items, users, onWithdraw}: TableContractProps) => {
+export const TableContract = observer(({items, users, onWithdraw, onShowCreditData}: TableContractProps) => {
 
     const handleWithdraw = (contractNumber: string) => {
         onWithdraw(contractNumber)
@@ -75,6 +76,11 @@ export const TableContract = observer(({items, users, onWithdraw}: TableContract
             }
         },
         {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
@@ -82,6 +88,11 @@ export const TableContract = observer(({items, users, onWithdraw}: TableContract
                 if (record.contractType === 'DEPOSIT' && record["depositName"] === 'Last' && record.status === 'ACTIVE') {
                     return <Button danger onClick={()=>handleWithdraw(record.contractNumber)}>
                         Withdraw
+                    </Button>
+                }
+                if (record.contractType === 'CREDIT') {
+                    return <Button color={'green'} onClick={()=>onShowCreditData(record.contractNumber)}>
+                        Show data
                     </Button>
                 }
             }

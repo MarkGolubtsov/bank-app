@@ -5,7 +5,7 @@ import {UserComponent} from 'app/ui/UserComponent';
 import {useHistory} from 'react-router';
 import {Routes} from 'app/constants/Routes';
 import {ContractsStore} from 'app/store/ContractsStore';
-import {Col, Row, Select} from 'antd';
+import {Col, Row, Select, Space} from 'antd';
 import {TableContract} from 'app/ui/TableContracts';
 
 export const Users = observer(() => {
@@ -46,12 +46,14 @@ export const Users = observer(() => {
         <div className="site-layout-background" style={{padding: 24}}>
             <Row>
                 <Col span={24}>
+                    <Space wrap={true} direction={'vertical'}>
                     {usersStore.items.map((item) => {
                         return <UserComponent onCreateCredit={handleCreateCred} onCreateDep={handleCreateDep}
                                               key={item.id}
                                               user={item} onDelete={handleDelete}
-                                              onEdit={handleEdit}/>
+                                                     onEdit={handleEdit}/>
                     })}
+                    </Space>
                 </Col>
             </Row>
         </div>

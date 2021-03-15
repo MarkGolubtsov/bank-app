@@ -1,6 +1,5 @@
 import React from 'react';
 import {Table} from 'antd';
-import {Button} from 'antd/es';
 import {User} from 'app/entity/User';
 
 type TableAccountsProps = {

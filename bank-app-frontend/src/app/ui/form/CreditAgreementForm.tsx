@@ -17,7 +17,7 @@ type CountType = {
     procent: number
 }
 
-const creditesPlans: DepType[] = [
+export const creditesPlans: DepType[] = [
     {
         id: 1,
         name: 'First',
@@ -70,10 +70,6 @@ const creditesPlans: DepType[] = [
 type CreditAgreementFormPops = {
     onCreate: (data: any) => void;
 };
-
-interface map {
-    [key: string]: string
-}
 
 export const CreditAgreementForm = observer(({onCreate}: CreditAgreementFormPops) => {
     const {currency} = useContext(RootStoreContext);
