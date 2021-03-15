@@ -94,8 +94,8 @@ class AccountService @Autowired constructor(
                 ?.divide(BigDecimal(365), 2, RoundingMode.HALF_UP)
             val totalAmount = percentsAmount?.divide(BigDecimal(100));
             if (totalAmount != null) {
-                it.credit.plus(totalAmount)
-                bankAccount.debit.plus(totalAmount)
+                it.credit = it.credit.plus(totalAmount)
+                bankAccount.debit = bankAccount.debit.plus(totalAmount)
             }
             it.surplus = it.credit - it.debit
             if (currentDate.compareTo(contract?.contractEndDate) == 0) {
