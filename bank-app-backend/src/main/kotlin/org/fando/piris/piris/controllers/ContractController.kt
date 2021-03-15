@@ -31,7 +31,6 @@ class ContractController @Autowired constructor(
         } else {
             val contract = contractService.createContract(requestContract, deposit.get(), client.get())
             accountService.createDepositAccounts(client.get(), contract)
-            accountService.replenishBankAccount(requestContract.amount)
             ResponseEntity.ok().build()
         }
     }
@@ -46,7 +45,6 @@ class ContractController @Autowired constructor(
         } else {
             val contract = contractService.createContract(requestContract, credit.get(), client.get())
             accountService.createCreditAccounts(client.get(), contract);
-            accountService.getFromBankAccount(requestContract.amount)
             ResponseEntity.ok().build()
         }
     }

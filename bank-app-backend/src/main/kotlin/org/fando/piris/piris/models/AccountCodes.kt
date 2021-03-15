@@ -8,3 +8,4 @@ enum class AccountCodes(val code: Int) {
     CASH(1010),
     BDF(7327);
 }
+

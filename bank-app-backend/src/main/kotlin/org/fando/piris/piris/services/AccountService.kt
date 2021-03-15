@@ -20,13 +20,13 @@ import kotlin.random.Random
 @Service
 @Transactional
 class AccountService @Autowired constructor(
-        private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository
 ) {
 
     fun closeAccounts(contract: Contract) {
         val accounts = accountRepository.findAccountsByContract(contract);
         val bankAccount = accountRepository.findAccountByAccountCode(AccountCodes.BDF.code)
-        accounts.filter {it.status != StatusEnum.CLOSED }.map { acc ->
+        accounts.filter { it.status != StatusEnum.CLOSED }.map { acc ->
             acc.status = StatusEnum.CLOSED
             if (acc.accountCode == AccountCodes.DEP.code) {
                 acc.credit = acc.credit.plus(contract.amount)
@@ -37,6 +37,8 @@ class AccountService @Autowired constructor(
         accountRepository.save(bankAccount)
     }
 
+    fun getCashAccount() = accountRepository.findAccountByAccountCode(AccountCodes.CASH.code)
+
     fun getAllAccounts(): List<Account> = accountRepository.findAll()
 
     fun replenishBankAccount(amount: BigDecimal) {
@@ -44,122 +46,154 @@ class AccountService @Autowired constructor(
         bankAccount.credit.plus(amount)
     }
 
-    fun getFromBankAccount(amount: BigDecimal) {
-        val bankAccount = accountRepository.findAccountByAccountCode(AccountCodes.BDF.code)
-        bankAccount.debit.plus(amount)
-    }
+    fun getBankAccount() = accountRepository.findAccountByAccountCode(AccountCodes.BDF.code)
 
     fun createDepositAccounts(client: Client, contract: Contract) {
-        createDepositAccount(client, contract)
+        val acc = createDepositAccount(client, contract)
         createPercentsDepositAccount(client, contract)
+        val cashAcc = getCashAccount()
+        cashAcc.debit += contract.amount
+        cashAcc.credit += contract.amount
+        acc.credit += contract.amount
+        acc.debit += contract.amount
+        val bankAcc = getBankAccount()
+        bankAcc.credit += contract.amount
     }
 
     fun createCreditAccounts(client: Client, contract: Contract) {
-        createCreditAccount(client, contract)
+        val acc = createCreditAccount(client, contract)
         createPercentsCreditAccount(client, contract)
+        val bankAcc = getBankAccount()
+        bankAcc.debit += contract.amount
+        acc.debit += contract.amount
+        acc.credit += contract.amount
+        val cashAcc = getCashAccount()
+        cashAcc.debit += contract.amount
+        cashAcc.credit += contract.amount
     }
 
-    fun closeDay() {
+    fun closeDay(closeUntil: LocalDate, currentDate: LocalDate) {
+        val countDays = ChronoUnit.DAYS.between(currentDate, closeUntil)
+        for (day in 0L..countDays) {
+            closeOneDay(currentDate.plusDays(day))
+        }
+    }
+
+    private fun closeOneDay(currentDate: LocalDate) {
         val accounts = accountRepository.findAll()
-        val bankAccount = accounts.first { it.accountCode == AccountCodes.BDF.code }
-        val percentsDepAccounts = accounts.filter { it.accountCode == AccountCodes.DEPPRC.code }
-        val debitAccounts = accounts.filter { it.accountCode == AccountCodes.DEP.code }
+        val bankAccount = getBankAccount()
+        val cashAccount = getCashAccount()
+        val percentsDepAccounts =
+            accounts.filter { it.accountCode == AccountCodes.DEPPRC.code && it.status == StatusEnum.ACTIVE }
+        val debitAccounts =
+            accounts.filter { it.accountCode == AccountCodes.DEP.code && it.status == StatusEnum.ACTIVE }
         percentsDepAccounts.forEach {
             val contract = it.contract
             val depositTermInDays = ChronoUnit.DAYS.between(contract?.contractStartDate, contract?.contractEndDate)
-            val percentsAmount = contract?.amount?.multiply(contract.percents)?.multiply(BigDecimal(depositTermInDays))?.divide(BigDecimal(365), 2, RoundingMode.HALF_UP)
+            val percentsAmount = contract?.amount?.multiply(contract.percents)?.multiply(BigDecimal(depositTermInDays))
+                ?.divide(BigDecimal(365), 2, RoundingMode.HALF_UP)
             val totalAmount = percentsAmount?.divide(BigDecimal(100));
             if (totalAmount != null) {
                 it.credit.plus(totalAmount)
                 bankAccount.debit.plus(totalAmount)
             }
-            it.surplus = it.surplus.plus(it.credit.minus(it.debit))
-            if (LocalDate.now().compareTo(contract?.contractEndDate) == 0) {
+            it.surplus = it.credit - it.debit
+            if (currentDate.compareTo(contract?.contractEndDate) == 0) {
                 contract?.status = StatusEnum.CLOSED
                 it.status = StatusEnum.CLOSED
             }
-            accountRepository.save(it)
+            accountRepository.saveAndFlush(it)
         }
         debitAccounts.forEach {
             val contract = it.contract
-            if (LocalDate.now().compareTo(contract?.contractEndDate) == 0) {
+            if (currentDate.compareTo(contract?.contractEndDate) == 0) {
+                if (contract?.amount != null) {
+                    bankAccount.debit += contract.amount
+                    it.credit += contract.amount
+                    it.debit += contract.amount
+                    cashAccount.debit += contract.amount
+                    cashAccount.credit += contract.amount
+                }
                 contract?.status = StatusEnum.CLOSED
                 it.status = StatusEnum.CLOSED
-                it.credit = contract?.amount ?: it.credit
-                it.surplus = it.surplus.plus(it.credit.minus(it.debit))
-                bankAccount.debit = contract?.amount ?: bankAccount.debit
+                it.surplus = it.credit - it.debit
+
             }
-            accountRepository.save(it)
+            accountRepository.saveAndFlush(it)
         }
-        bankAccount.surplus = bankAccount.surplus.plus(bankAccount.credit.minus(bankAccount.debit))
-        accountRepository.save(bankAccount)
+        bankAccount.surplus = bankAccount.credit - bankAccount.debit
+        cashAccount.surplus = cashAccount.debit - cashAccount.credit
+        accountRepository.saveAndFlush(bankAccount)
+        accountRepository.saveAndFlush(cashAccount)
     }
 
-    private fun createCreditAccount(client: Client, contract: Contract) {
-        accountRepository.save(
-                Account(
-                        AccountCodes.CRD.code,
-                        generateAccountNumber(AccountCodes.CRD.code, client),
-                        AccountTypeEnum.PASSIVE,
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        client,
-                        StatusEnum.ACTIVE,
-                        contract
-                )
+    private fun createCreditAccount(client: Client, contract: Contract): Account {
+        return accountRepository.save(
+            Account(
+                AccountCodes.CRD.code,
+                generateAccountNumber(AccountCodes.CRD.code, client),
+                AccountTypeEnum.PASSIVE,
+                BigDecimal(0),
+                BigDecimal(0),
+                BigDecimal(0),
+                client,
+                StatusEnum.ACTIVE,
+                contract
+            )
         )
     }
 
     private fun createPercentsCreditAccount(client: Client, contract: Contract) {
         accountRepository.save(
-                Account(
-                        AccountCodes.CRDPRC.code,
-                        generateAccountNumber(AccountCodes.CRDPRC.code, client),
-                        AccountTypeEnum.PASSIVE,
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        client,
-                        StatusEnum.ACTIVE,
-                        contract
-                )
+            Account(
+                AccountCodes.CRDPRC.code,
+                generateAccountNumber(AccountCodes.CRDPRC.code, client),
+                AccountTypeEnum.PASSIVE,
+                BigDecimal(0),
+                BigDecimal(0),
+                BigDecimal(0),
+                client,
+                StatusEnum.ACTIVE,
+                contract
+            )
         )
     }
 
-    private fun createDepositAccount(client: Client, contract: Contract) {
-        accountRepository.save(
-                Account(
-                        AccountCodes.DEP.code,
-                        generateAccountNumber(AccountCodes.DEP.code, client),
-                        AccountTypeEnum.PASSIVE,
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        client,
-                        StatusEnum.ACTIVE,
-                        contract
-                )
+    private fun createDepositAccount(client: Client, contract: Contract): Account {
+        return accountRepository.save(
+            Account(
+                AccountCodes.DEP.code,
+                generateAccountNumber(AccountCodes.DEP.code, client),
+                AccountTypeEnum.PASSIVE,
+                BigDecimal(0),
+                BigDecimal(0),
+                BigDecimal(0),
+                client,
+                StatusEnum.ACTIVE,
+                contract
+            )
         )
     }
 
     private fun createPercentsDepositAccount(client: Client, contract: Contract) {
         accountRepository.save(
-                Account(
-                        AccountCodes.DEPPRC.code,
-                        generateAccountNumber(AccountCodes.DEPPRC.code, client),
-                        AccountTypeEnum.PASSIVE,
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        BigDecimal(0),
-                        client,
-                        StatusEnum.ACTIVE,
-                        contract
-                )
+            Account(
+                AccountCodes.DEPPRC.code,
+                generateAccountNumber(AccountCodes.DEPPRC.code, client),
+                AccountTypeEnum.PASSIVE,
+                BigDecimal(0),
+                BigDecimal(0),
+                BigDecimal(0),
+                client,
+                StatusEnum.ACTIVE,
+                contract
+            )
         )
     }
 
     private fun generateAccountNumber(accountCode: Int, client: Client): String =
-            "$accountCode${client.idDocument.passportNumber.substring(0, 5)}${(client.accounts.size + 1).toString().padStart(3, '0')}${Random.nextInt(0, 9)}"
+        "$accountCode${client.idDocument.passportNumber.substring(0, 5)}${
+            (client.accounts.size + 1).toString().padStart(3, '0')
+        }${Random.nextInt(0, 9)}"
 
 }
