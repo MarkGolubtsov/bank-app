@@ -6,8 +6,10 @@ import org.fando.piris.piris.entities.Client
 import org.fando.piris.piris.entities.Contract
 import org.fando.piris.piris.models.AccountCodes
 import org.fando.piris.piris.models.AccountTypeEnum
+import org.fando.piris.piris.models.DepositTypes
 import org.fando.piris.piris.models.StatusEnum
 import org.fando.piris.piris.repositories.AccountRepository
+import org.fando.piris.piris.repositories.SimulatedInfoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -20,7 +22,8 @@ import kotlin.random.Random
 @Service
 @Transactional
 class AccountService @Autowired constructor(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val supportingService: SupportingService
 ) {
 
     fun closeAccounts(contract: Contract) {
@@ -75,11 +78,11 @@ class AccountService @Autowired constructor(
     fun closeDay(closeUntil: LocalDate, currentDate: LocalDate) {
         val countDays = ChronoUnit.DAYS.between(currentDate, closeUntil)
         for (day in 0L..countDays) {
-            closeOneDay(currentDate.plusDays(day))
+            closeOneDay(currentDate, currentDate.plusDays(day))
         }
     }
 
-    private fun closeOneDay(currentDate: LocalDate) {
+    private fun closeOneDay(currentDate: LocalDate, closeDate: LocalDate) {
         val accounts = accountRepository.findAll()
         val bankAccount = getBankAccount()
         val cashAccount = getCashAccount()
@@ -87,7 +90,16 @@ class AccountService @Autowired constructor(
             accounts.filter { it.accountCode == AccountCodes.DEPPRC.code && it.status == StatusEnum.ACTIVE }
         val debitAccounts =
             accounts.filter { it.accountCode == AccountCodes.DEP.code && it.status == StatusEnum.ACTIVE }
+        val percentsCreditAccounts =
+            accounts.filter { it.accountCode == AccountCodes.CRDPRC.code && it.status == StatusEnum.ACTIVE }
+        val creditAccounts =
+            accounts.filter { it.accountCode == AccountCodes.CRD.code && it.status == StatusEnum.ACTIVE }
         percentsDepAccounts.forEach {
+            if (closeDate.monthValue > currentDate.monthValue && it.contract?.depositType?.depositType == DepositTypes.REVOCABLE) {
+                it.debit = it.credit
+                cashAccount.debit += it.debit
+                cashAccount.credit += it.debit
+            }
             val contract = it.contract
             val depositTermInDays = ChronoUnit.DAYS.between(contract?.contractStartDate, contract?.contractEndDate)
             val percentsAmount = contract?.amount?.multiply(contract.percents)?.multiply(BigDecimal(depositTermInDays))
@@ -98,7 +110,12 @@ class AccountService @Autowired constructor(
                 bankAccount.debit = bankAccount.debit.plus(totalAmount)
             }
             it.surplus = it.credit - it.debit
-            if (currentDate.compareTo(contract?.contractEndDate) == 0) {
+            if (closeDate.compareTo(contract?.contractEndDate) == 0) {
+                if (it.contract?.depositType?.depositType == DepositTypes.IRREVOCABLE) {
+                    it.debit = it.credit
+                    cashAccount.debit += it.debit
+                    cashAccount.credit += it.debit
+                }
                 contract?.status = StatusEnum.CLOSED
                 it.status = StatusEnum.CLOSED
             }
@@ -106,7 +123,7 @@ class AccountService @Autowired constructor(
         }
         debitAccounts.forEach {
             val contract = it.contract
-            if (currentDate.compareTo(contract?.contractEndDate) == 0) {
+            if (closeDate.compareTo(contract?.contractEndDate) == 0) {
                 if (contract?.amount != null) {
                     bankAccount.debit += contract.amount
                     it.credit += contract.amount
@@ -121,10 +138,66 @@ class AccountService @Autowired constructor(
             }
             accountRepository.saveAndFlush(it)
         }
+        percentsCreditAccounts.forEach {
+            val contract = it.contract
+            if (closeDate.monthValue > currentDate.monthValue) {
+                it.debit = it.credit
+                cashAccount.debit += it.debit
+                cashAccount.credit += it.debit
+            }
+            if (contract != null) {
+                val percentsAmount: BigDecimal
+                if (contract.creditType?.creditName?.equals("First", true) == true) {
+                    val creditTermInMonths =
+                        ChronoUnit.MONTHS.between(contract.contractStartDate, contract.contractEndDate)
+                    val monthlyAmount =
+                        contract.amount.divide(BigDecimal(creditTermInMonths), 2, RoundingMode.HALF_UP)
+                    val countMonths = ChronoUnit.MONTHS.between(contract.contractStartDate, closeDate)
+                    val mainDept =
+                        monthlyAmount.times(BigDecimal(countMonths)).let { amount -> contract.amount.minus(amount) }
+                    percentsAmount = (mainDept * contract.percents.divide(BigDecimal(100)))
+                        .divide(
+                            BigDecimal(365),
+                            2,
+                            RoundingMode.HALF_UP
+                        )
+                } else {
+                    val creditTermInMonths =
+                        ChronoUnit.MONTHS.between(contract.contractStartDate, contract.contractEndDate)
+                    val percents = contract.percents.divide(BigDecimal(100)).divide(BigDecimal(12))
+                    val numerator = contract.amount * (percents * (BigDecimal.ONE + percents).pow(creditTermInMonths.toInt()))
+                    val denominator = (BigDecimal.ONE + percents).pow(creditTermInMonths.toInt()) - BigDecimal.ONE
+                    val monthlyPay = numerator.divide(denominator, 2, RoundingMode.HALF_UP)
+                    percentsAmount = monthlyPay - (contract.amount.divide(BigDecimal(creditTermInMonths)))
+                }
+                it.credit += percentsAmount
+                bankAccount.credit += percentsAmount
+            }
+            it.surplus = it.debit - it.credit
+            accountRepository.saveAndFlush(it)
+        }
+        creditAccounts.forEach {
+            val contract = it.contract
+            if (closeDate.compareTo(contract?.contractEndDate) == 0) {
+                if (contract?.amount != null) {
+                    cashAccount.debit += contract.amount
+                    cashAccount.credit += contract.amount
+                    it.credit += contract.amount
+                    it.debit += contract.amount
+                    bankAccount.credit += contract.amount
+                }
+                contract?.status = StatusEnum.CLOSED
+                it.status = StatusEnum.CLOSED
+                it.surplus = it.credit - it.debit
+
+            }
+            accountRepository.saveAndFlush(it)
+        }
         bankAccount.surplus = bankAccount.credit - bankAccount.debit
         cashAccount.surplus = cashAccount.debit - cashAccount.credit
         accountRepository.saveAndFlush(bankAccount)
         accountRepository.saveAndFlush(cashAccount)
+        supportingService.updateCurrentDate(closeDate);
     }
 
     private fun createCreditAccount(client: Client, contract: Contract): Account {
